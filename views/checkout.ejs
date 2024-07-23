@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Checkout</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css"
+    href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css" />
+  <script src="https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id=<%= clientId %>"
+    data-client-token="<%= clientToken %>"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #0070ba; /* Fondo azul */
+      color: #000; /* Color del texto en negro */
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1200px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .products {
+      flex: 1;
+      margin-right: 20px;
+    }
+
+    .buyer-info {
+      max-width: 400px;
+    }
+
+    .cart, .card {
+      border-radius: 8px;
+      background: #ededed;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .cart img {
+      width: 100px; /* Tamaño fijo para las imágenes */
+      height: 100px; /* Tamaño fijo para las imágenes */
+      object-fit: cover; /* Asegura que las imágenes se ajusten sin distorsionarse */
+      margin-right: 10px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .cart-item label {
+      margin-right: 10px;
+    }
+
+    .btn {
+      background: #0070ba;
+      color: white;
+      border: none;
+      padding: 5px 10px; /* Tamaño reducido para los botones */
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px; /* Tamaño de fuente para los botones */
+    }
+
+    .btn:hover {
+      background: #005f9e;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #paypal-button-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="products">
+      <div class="cart">
+        <h3>Items Selected</h3>
+        <div class="cart-item">
+          <img src="Media/Silla.jpg" alt="Wood Chair" />
+          <div>
+            <label>Wood Chair</label><br />
+            <label id="sku1">Sku: 49763576153</label><br />
+            <label>$</label><label id="unitPrice1">50</label><label> USD</label><br />
+            <label>Qty:</label>
+            <button class="btn" onclick="substractQty(1);">-</button>
+            <span id="quantity1">0</span>
+            <button class="btn" onclick="addQty(1);">+</button>
+          </div>
+        </div>
+        <div class="cart-item">
+          <img src="Media/Balón.avif" alt="Basketball ball" />
+          <div>
+            <label>Basketball ball</label><br />
+            <label id="sku2">Sku: 53232566855</label><br />
+            <label>$</label><label id="unitPrice2">80</label><label> USD</label><br />
+            <label>Qty:</label>
+            <button class="btn" onclick="substractQty(2);">-</button>
+            <span id="quantity2">0</span>
+            <button class="btn" onclick="addQty(2);">+</button>
+          </div>
+        </div>
+        <div class="cart-item">
+          <img src="Media/Xbox.avif" alt="Xbox" />
+          <div>
+            <label>Xbox</label><br />
+            <label id="sku3">Sku: 18263546556</label><br />
+            <label>$</label><label id="unitPrice3">120</label><label> USD</label><br />
+            <label>Qty:</label>
+            <button class="btn" onclick="substractQty(3);">-</button>
+            <span id="quantity3">0</span>
+            <button class="btn" onclick="addQty(3);">+</button>
+          </div>
+        </div>
+        <div>
+          <span>Total:</span>
+          <label>$</label><label id="transactionTotal">0</label> <label> USD</label>
+        </div>
+      </div>
+      <div id="paypal-button-container"></div>
+    </div>
+
+    <div class="buyer-info">
+      <div class="card">
+        <h3>Buyer's Info</h3>
+        <form>
+          <label for="fname">First Name:</label><br>
+          <input type="text" id="fname" name="fname" value="John"><br>
+          <label for="lname">Last Name:</label><br>
+          <input type="text" id="lname" name="lname" value="Doe"><br>
+          <label for="email">Email:</label><br>
+          <input type="email" id="email" name="email" value="john.doe@example.com"><br>
+          <label for="phone">Phone:</label><br>
+          <input type="tel" id="phone" name="phone" value="123-456-7890"><br>
+          <label for="street">Street Address:</label><br>
+          <input type="text" id="street" name="street" value="123 Main St"><br>
+          <label for="city">City:</label><br>
+          <input type="text" id="city" name="city" value="Anytown"><br>
+          <label for="state">State:</label><br>
+          <input type="text" id="state" name="state" value="CA"><br>
+          <label for="zip">Zip Code:</label><br>
+          <input type="text" id="zip" name="zip" value="90210"><br>
+          <label for="country">Country:</label><br>
+          <input type="text" id="country" name="country" value="United States"><br>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function addQty(itemId) {
+      var quantity = document.getElementById('quantity' + itemId);
+      quantity.textContent = parseInt(quantity.textContent) + 1;
+      updateTotal();
+    }
+
+    function substractQty(itemId) {
+      var quantity = document.getElementById('quantity' + itemId);
+      var currentQty = parseInt(quantity.textContent);
+      if (currentQty > 0) {
+        quantity.textContent = currentQty - 1;
+        updateTotal();
+      }
+    }
+
+    function updateTotal() {
+      var total = 0;
+      for (var i = 1; i <= 3; i++) {
+        var unitPrice = parseFloat(document.getElementById('unitPrice' + i).textContent);
+        var quantity = parseInt(document.getElementById('quantity' + i).textContent);
+        total += unitPrice * quantity;
+      }
+      document.getElementById('transactionTotal').textContent = total.toFixed(2);
+    }
+
+ // Inicialización de PayPal
+paypal.Buttons({
+  createOrder: function (data, actions) {
+    return actions.order.create({
+      purchase_units: [{
+        amount: {
+          value: document.getElementById('transactionTotal').textContent
+        }
+      }]
+    });
+  },
+  onApprove: function (data, actions) {
+    return actions.order.capture().then(function (details) {
+      // Redirigir a la página de agradecimiento con el ID de transacción
+      window.location.href = `thankyou.html?transactionID=${data.orderID}`;
+    });
+  },
+  onError: function (err) {
+    console.error(err);
+  }
+}).render('#paypal-button-container');
+
+  </script>
+</body>
+
+</html>
